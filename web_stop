@@ -1,0 +1,12 @@
+#!/bin/sh
+
+/opt/tomcat5/bin/shutdown.sh 
+
+sleep 5
+
+result=`ps -ef|grep -v grep|grep "org.apache.catalina.startup.Bootstrap start" |wc -l`
+if [ $result == 1 ] ; then
+        echo " web stop fail "
+        exit 1
+fi
+echo "tomcat shutdown sucessful"

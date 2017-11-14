@@ -1,0 +1,166 @@
+#!/bin/sh
+#
+if [ $# != 3 ]
+then
+	echo "Useage:backup_conf dbuser dbpassword destdir"
+	exit 1
+fi
+[ $1 ]&&dbuser=$1
+[ $2 ]&&dbpassword=$2
+
+NOWTIME=`date +%Y%m%d%H%M%S`
+DESTDIR=$3
+
+MYSQLDUMP=/opt/mysql/bin/mysqldump
+
+if [ ! -d $DESTDIR ]
+then
+	mkdir -p $DESTDIR
+fi
+
+function permsg()
+{
+	echo "error:$MYSQLDUMP access error!!"
+}
+
+MYSQLDUMP_CHECK=`$MYSQLDUMP -u${dbuser} -p${dbpassword} owdbconf tsysconfig > $DESTDIR/tsysconfig.sql 2>&1;echo $?`
+if [ $MYSQLDUMP_CHECK -ne 0 ]
+then
+	echo "1111111"
+	permsg
+	exit 1
+fi
+MYSQLDUMP_CHECK=`$MYSQLDUMP -u${dbuser} -p${dbpassword} owdbconf tdeviceconf > $DESTDIR/tdeviceconf.sql 2>&1;echo $?`
+if [ $MYSQLDUMP_CHECK -ne 0 ]
+then
+        permsg
+        exit 1
+fi
+MYSQLDUMP_CHECK=`$MYSQLDUMP -u${dbuser} -p${dbpassword} owdbconf tdeviceident > $DESTDIR/tdeviceident.sql 2>&1;echo $?`
+if [ $MYSQLDUMP_CHECK -ne 0 ]
+then
+        permsg
+        exit 1
+fi
+MYSQLDUMP_CHECK=`$MYSQLDUMP -u${dbuser} -p${dbpassword} owdbconf ttaskpublicinfo > $DESTDIR/ttaskpublicinfo.sql 2>&1;echo $?`
+if [ $MYSQLDUMP_CHECK -ne 0 ]
+then
+	echo "22222"
+	permsg
+	exit 1
+fi
+MYSQLDUMP_CHECK=`$MYSQLDUMP -u${dbuser} -p${dbpassword} owdbconf ttaskfileinfo > $DESTDIR/ttaskfileinfo.sql 2>&1;echo $?`
+if [ $MYSQLDUMP_CHECK -ne 0 ]
+then
+	echo "333333"
+	permsg
+	exit 1
+fi
+MYSQLDUMP_CHECK=`$MYSQLDUMP -u${dbuser} -p${dbpassword} owdbconf ttasktableofdbinfo > $DESTDIR/ttasktableofdbinfo.sql 2>&1;echo $?`
+if [ $MYSQLDUMP_CHECK -ne 0 ]
+then
+        permsg
+        exit 1
+fi
+MYSQLDUMP_CHECK=`$MYSQLDUMP -u${dbuser} -p${dbpassword} owdbconf ttaskdbinfo > $DESTDIR/ttaskdbinfo.sql 2>&1;echo $?`
+if [ $MYSQLDUMP_CHECK -ne 0 ]
+then
+        permsg
+        exit 1
+fi
+MYSQLDUMP_CHECK=`$MYSQLDUMP -u${dbuser} -p${dbpassword} owdbconf tftpservconf > $DESTDIR/tftpservconf.sql 2>&1;echo $?`
+if [ $MYSQLDUMP_CHECK -ne 0 ]
+then
+	echo "4444444"
+	permsg
+	exit 1
+fi
+MYSQLDUMP_CHECK=`$MYSQLDUMP -u${dbuser} -p${dbpassword} owdbconf tfiletransuser > $DESTDIR/tfiletransuser.sql 2>&1;echo $?`
+if [ $MYSQLDUMP_CHECK -ne 0 ]
+then
+	echo "5555555"
+	permsg
+	exit 1
+fi
+MYSQLDUMP_CHECK=`$MYSQLDUMP -u${dbuser} -p${dbpassword} owdbconf tnetinfo > $DESTDIR/tnetinfo.sql 2>&1;echo $?`
+if [ $MYSQLDUMP_CHECK -ne 0 ]
+then
+	echo "6666666"
+	permsg
+	exit 1
+fi
+MYSQLDUMP_CHECK=`$MYSQLDUMP -u${dbuser} -p${dbpassword} owdbweb logtype > $DESTDIR/logtype.sql 2>&1;echo $?`
+if [ $MYSQLDUMP_CHECK -ne 0 ]
+then
+	echo "777777"
+	permsg
+	exit 1
+fi
+MYSQLDUMP_CHECK=`$MYSQLDUMP -u${dbuser} -p${dbpassword} owdbweb loginconfig > $DESTDIR/loginconfig.sql 2>&1;echo $?`
+if [ $MYSQLDUMP_CHECK -ne 0 ]
+then
+	echo "88888"
+	permsg
+	exit 1
+fi
+MYSQLDUMP_CHECK=`$MYSQLDUMP -u${dbuser} -p${dbpassword} owdbweb reguser > $DESTDIR/reguser.sql 2>&1;echo $?`
+if [ $MYSQLDUMP_CHECK -ne 0 ]
+then
+	echo "99999"
+	permsg
+	exit 1
+fi
+MYSQLDUMP_CHECK=`$MYSQLDUMP -u${dbuser} -p${dbpassword} owdbweb role > $DESTDIR/role.sql 2>&1;echo $?`
+if [ $MYSQLDUMP_CHECK -ne 0 ]
+then
+	echo "aaaaaaaa"
+	permsg
+	exit 1
+fi
+MYSQLDUMP_CHECK=`$MYSQLDUMP -u${dbuser} -p${dbpassword} owdbweb usergroup > $DESTDIR/usergroup.sql 2>&1;echo $?`
+if [ $MYSQLDUMP_CHECK -ne 0 ]
+then
+	echo "bbbbbbb"
+	permsg
+	exit 1
+fi
+MYSQLDUMP_CHECK=`$MYSQLDUMP -u${dbuser} -p${dbpassword} owdbweb userstate > $DESTDIR/userstate.sql 2>&1;echo $?`
+if [ $MYSQLDUMP_CHECK -ne 0 ]
+then
+        echo "bbbbbbb11111111"
+        permsg
+        exit 1
+fi
+MYSQLDUMP_CHECK=`$MYSQLDUMP -u${dbuser} -p${dbpassword} owdbweb role_url > $DESTDIR/role_url.sql 2>&1;echo $?`
+if [ $MYSQLDUMP_CHECK -ne 0 ]
+then
+	echo "ccccccc"
+	permsg
+	exit 1
+fi
+
+MYSQLDUMP_CHECK=`$MYSQLDUMP -u${dbuser} -p${dbpassword} owdbweb url > $DESTDIR/url.sql 2>&1;echo $?`
+if [ $MYSQLDUMP_CHECK -ne 0 ]
+then
+	echo "dddddddd"
+	permsg
+	exit 1
+fi
+
+MYSQLDUMP_CHECK=`$MYSQLDUMP -u${dbuser} -p${dbpassword} owdbweb logindisip > $DESTDIR/logindisip.sql 2>&1;echo $?`
+if [ $MYSQLDUMP_CHECK -ne 0 ]
+then
+	echo "eeeeee"
+	permsg
+	exit 1
+fi
+
+cd $DESTDIR
+tar zcf backup_conf_$NOWTIME.tar.gz *.sql
+rm -rf *.sql
+
+rm -f /backup/system/network_back_conf/*
+cp -f /etc/sysconfig/network-scripts/ifcfg-eth* /backup/system/network_back_conf
+
+echo backup_conf_$NOWTIME.tar.gz
+

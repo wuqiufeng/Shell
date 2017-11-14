@@ -1,0 +1,5 @@
+cd /opt/oneway/bin/DBJAVA
+
+/usr/bin/java -jar DBManager.jar > /tmp/java_proc_out_start.log &
+
+

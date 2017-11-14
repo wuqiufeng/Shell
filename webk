@@ -1,0 +1,18 @@
+#!/bin/sh
+
+NOWTIME=$(date +%Y%m%d%H%M%S)
+
+filename=webk.log
+
+echo "<==========${NOWTIME}==========>" >>/audit/dxcs/$filename
+
+result=`ps -ef|grep -v grep|grep "org.apache.catalina.startup.Bootstrap start" |wc -l`
+if [ $result != 1 ] ; then
+        echo "tomcat is stopped" >>/audit/dxcs/$filename
+        exit 1
+else
+        echo "tomcat is running...,now stop tomcat" >>/audit/dxcs/$filename
+        netstat -tlnp |grep 80 |grep -v 8002| grep java |grep -Po '\d+(?=/)'|xargs kill -9 > /dev/null
+fi
+
+echo $?

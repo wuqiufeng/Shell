@@ -1,0 +1,12 @@
+#!/bin/sh
+
+p1=$1
+owsmbpasswd  -s samba << EOF
+$p1
+$p1
+
+EOF
+
+
+
+

@@ -1,0 +1,78 @@
+#!/bin/sh
+#ntpupdate.sh
+#set you ntpserver ip address
+NTPSERVERIP="$1"
+INTERVAL=$2
+LOGINNAME=`whoami`
+NTPSERVER_CHECK=`ntpdate -q $NTPSERVERIP >/dev/null 2>&1;echo $?`
+NTP_CHECK=`netstat -ln|grep 123|wc -l`
+
+function permsg ()
+{
+echo ""
+echo "You need to be root to run this script!!"
+echo ""
+}
+
+function ntpmsg () 
+{
+echo ""
+echo "WARNING:You Can't Execute ntpdate Or Your Ntpserver Down!!"
+echo ""
+}
+
+function servermsg()
+{
+echo ""
+echo "WARNING:This is NTPSERVER!!"
+echo ""
+}
+
+#if the user is not root
+if [ "$LOGINNAME" != "root" ]
+then
+permsg
+exit 1
+fi
+
+if [ $NTP_CHECK -ne 0 ]
+then
+servermsg
+exit 1
+fi
+
+
+if [ $NTPSERVER_CHECK -ne 0 ]
+then
+ntpmsg
+exit 1
+fi
+
+#create crontab
+if [ $3 == "start" ]
+then
+crontab -l >/tmp/root.cron.tmp
+sed '/\/usr\/sbin\/ntpdate/d' /tmp/root.cron.tmp > /tmp/root.cron
+echo "*/$INTERVAL * * * * /usr/sbin/ntpdate $NTPSERVERIP;hwclock -w>/dev/null 2>&1" >>/tmp/root.cron
+crontab /tmp/root.cron
+#delete from crontab
+elif [ $3 == "stop" ]
+then
+crontab -r
+exit 1
+
+else
+echo "参数有误"
+fi
+
+#start ntpdate 
+#/usr/sbin/ntpdate $NTPSERVERIP 
+/usr/sbin/ntpdate $NTPSERVERIP >/dev/null 2>&1
+
+##start ntpdate when os start
+COUNT=`cat /etc/rc.d/rc.local|grep ntpdate|wc -l`
+if [ $COUNT -eq 0 ]
+then
+echo "### start ntpdate " >> /etc/rc.d/rc.local
+echo "/usr/sbin/ntpdate $NTPSERVERIP;hwclock -w">>/etc/rc.d/rc.local
+fi

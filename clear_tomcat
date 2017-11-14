@@ -1,0 +1,22 @@
+#!/bin/sh
+#
+begintime=$(date +%Y%m%d%H%M%S)
+endtime=$(date +%Y%m%d%H%M%S)
+LOGDIR=/audit/dxcs
+
+if [ ! -d ${LOGDIR} ]
+then
+                mkdir -p ${LOGDIR}
+fi
+logfile=$LOGDIR/clear_tomcat.log
+if [ ! -f $logfile ]
+then
+                touch $logfile
+fi
+
+echo "========begingtime ${begintime}=====">> ${logfile} 2>&1
+echo "开始删除tomcat缓存" >> ${logfile} 2>&1
+rm -rf /opt/tomcat5/work/Catalina/localhost/*
+echo "结束删除tomcat缓存" >> ${logfile} 2>&1
+echo "========endtime ${endtime}========">> ${logfile} 2>&1
+echo "######################################">> ${logfile} 2>&1

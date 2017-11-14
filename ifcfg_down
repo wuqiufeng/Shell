@@ -1,0 +1,4 @@
+#!/bin/sh
+/sbin/ifconfig $1 down
+#ifconfig $1 del $2 netmask $3 down
+echo $?

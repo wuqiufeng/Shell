@@ -1,0 +1,13 @@
+#!/bin/sh
+#
+pid=0
+pid=`ps -ef|grep -v grep|grep tomcat5|awk '{print $2}'`
+#echo $pid
+if [ $pid ]
+then
+	echo "tomcat5 aleady runing..."
+else
+	echo "tomcat5 stoped,beging running..."
+	sh /opt/tomcat5/bin/startup.sh >/dev/null
+fi
+

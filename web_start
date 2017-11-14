@@ -1,0 +1,17 @@
+#!/bin/sh
+
+/opt/tomcat5/bin/startup.sh 
+
+sleep 5
+
+result=`ps -ef|grep -v grep|grep "org.apache.catalina.startup.Bootstrap start" |wc -l`
+if [ $result != 1 ] ; then 
+	echo " web start error "
+	exit 1
+fi
+
+echo "web start ok"
+
+exit 0
+
+

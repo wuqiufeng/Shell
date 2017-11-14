@@ -1,0 +1,64 @@
+#!/bin/sh
+#
+#
+if [ $# -ne 2 ]
+then
+		echo "update fail!!"
+		exit 1
+fi
+DATATIME=$(date +%y%m%d%H%M)   
+
+LOGDIR=/audit/update/patch
+PACKNAME=$1
+PATCHDIR=$2
+
+if [ ! -d ${LOGDIR} ]
+then
+		mkdir -p ${LOGDIR}
+fi
+
+if [ ! -d ${PATCHDIR} ]
+then
+		mkdir -p ${PATCHDIR}
+fi
+
+logfile=$LOGDIR/patch_update.log
+if [ ! -f $logfile ]
+then
+		touch $logfile
+fi
+
+cd $PATCHDIR
+if [ ! -f $PACKNAME ]
+then
+		echo "update fail!!"
+		exit 1
+fi
+
+if [ -f update ]
+then
+	rm -rf update
+fi
+
+NEWPACKNAME=`ls $PACKNAME|awk -F "." '{printf $1}'`.tgz
+#echo $NEWPACKNAME
+mv $1 $NEWPACKNAME
+
+tar zxf $NEWPACKNAME
+if [ $? -ne 0 ]
+then
+                echo "update fail!!"
+                exit 1
+fi
+if [ ! -f update ]
+then
+        echo "update fail!!"
+        exit 1	
+fi
+rm -rf $NEWPACKNAME
+chmod +x ./update
+./update
+if [ $? -eq 0 ]
+then
+	echo "update successful!!"
+fi

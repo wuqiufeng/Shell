@@ -1,0 +1,5 @@
+#!/bin/sh
+DNS=$1
+FILE_PATH=/etc/resolv.conf
+echo "nameserver $DNS" > $FILE_PATH
+echo $?

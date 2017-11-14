@@ -1,0 +1,23 @@
+#!/bin/sh
+#
+NETWORKDIR=/etc/sysconfig/network-scripts
+if [ ! -d ${NETWORKDIR} ]
+then
+                echo "no exit ${NETWORKDIR}" >>/tmp/aaa.log
+                echo "fail"
+fi
+cd $NETWORKDIR
+filename=`echo ifcfg*$1`
+#echo $filename
+sed '/IPADDR/d' *$1 >${filename}.tmp
+mv ${filename}.tmp ${filename}
+chmod 755 ${filename}
+echo "IPADDR=$2" >>${filename}
+#/sbin/service network restart
+ifdown $1
+ifup $1
+if [ $? -ne 0 ]
+then
+                echo "fail"
+fi
+                echo "successful"

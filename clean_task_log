@@ -1,0 +1,88 @@
+#!/bin/sh
+#
+####数据库文件任务表清理脚本##############################
+#参数说明######################
+#参数1：用户
+#参数2：密码
+#参数3: 记录数
+################################
+
+if [ $# != 3 ]
+then
+   	echo "sh clean_task_log username passwd count"
+	exit;
+fi
+
+# 参数赋值
+[ $1 ] && dbu=$1
+[ $2 ] && dbp=$2
+[ $3 ] && count=$3
+# 配置数据库参数
+
+[ $dbu ] && dbu="-u"$dbu
+[ $dbp ] && dbp="-p"$dbp
+
+MYSQL=/usr/bin/mysql
+
+if [ -f /tmp/tfiletranslog.txt ]
+then
+		rm -rf /tmp/tfiletranslog.txt
+fi
+
+if [ -f /tmp/ttaskwarning.txt ]
+then
+		rm -rf /tmp/ttaskwarning.txt
+fi
+
+if [ -f /tmp/systemlog.txt ]
+then
+		rm -rf /tmp/systemlog.txt
+fi
+
+
+
+# 导入临时文件
+
+$MYSQL ${dbu} ${dbp} owdbaudit -e "select * into outfile '/tmp/tfiletranslog.txt' fields terminated by ',' 
+
+lines terminated by '\n' from tfiletranslog order by begintime desc limit 0,$count"
+
+if [ $? != 0 ]
+then
+	exit 1
+fi
+
+$MYSQL ${dbu} ${dbp} owdbaudit -e "select * into outfile '/tmp/ttaskwarning.txt' fields terminated by ',' 
+
+lines terminated by '\n' from ttaskwarning order by crttime desc limit 0,$count"
+
+if [ $? != 0 ]
+then
+        exit 1
+fi
+
+$MYSQL ${dbu} ${dbp} owdbweb -e "select * into outfile '/tmp/systemlog.txt' fields terminated by ',' 
+
+lines terminated by '\n' from systemlog order by systemlog_time desc limit 0,$count"
+
+if [ $? != 0 ]
+then
+        exit 1
+fi
+
+#删除日志表数据
+$MYSQL ${dbu} ${dbp} owdbaudit -e "delete from tfiletranslog"
+$MYSQL ${dbu} ${dbp} owdbaudit -e "delete from ttaskwarning"
+$MYSQL ${dbu} ${dbp} owdbweb -e "delete from systemlog"
+
+# 导入历史表
+$MYSQL ${dbu} ${dbp} owdbaudit -e "load data infile '/tmp/tfiletranslog.txt' into table tfiletranslog fields terminated by ',' lines terminated by '\n';"
+$MYSQL ${dbu} ${dbp} owdbaudit -e "load data infile '/tmp/ttaskwarning.txt' into table ttaskwarning fields terminated by ',' lines terminated by '\n';"
+$MYSQL ${dbu} ${dbp} owdbweb -e "load data infile '/tmp/systemlog.txt' into table systemlog fields terminated by ',' lines terminated by '\n';"
+
+# 删除临时文件
+rm -rf /tmp/tfiletranslog.txt
+rm -rf /tmp/ttaskwarning.txt
+rm -rf /tmp/systemlog.txt
+
+#echo "successfull"

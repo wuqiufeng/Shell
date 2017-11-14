@@ -1,0 +1,8 @@
+#!/bin/sh
+
+#add user
+if [[ ! `cat /etc/passwd | grep "samba"` ]];then
+        echo "samba:x:510:510::/cache/filedata/samba_server:/bin/nologin">>/etc/passwd
+fi
+
+chown samba:nobody /cache/filedata/samba_server

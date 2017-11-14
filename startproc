@@ -1,0 +1,56 @@
+#!/bin/sh
+#
+#CRGS单向传输系统1.0关闭脚本
+
+#prog="owtskdispatch owtskmanager owmsgforward owftpserver owfilesync owftpmanager owdbmanager owcron owsysmonitor owsmsalert mysqld vsftpd"
+prog="owtskdispatch owtskmanager owmsgforward owftpserver owfilesync owftpmanager  owcron owsysmonitor owsmsalert mysqld vsftpd"
+
+if [ $# != 1 ]
+then
+        echo "startproc procname"
+        exit;
+fi
+
+jpos=0
+for j in $prog
+do
+	if [ "$j" != "$1" ] ; then
+		jpos=`expr $jpos + 1`
+		if [ $jpos -gt 10 ] ; then
+			echo "This process not found,start fail"
+			exit 1
+		else
+			continue
+		fi
+	elif [ "$j" = "mysqld" ] ; then
+                /opt/mysql/scripts/start.sh > /dev/null
+                sleep 2
+                number=`ps -u $LOGNAME | grep -c "$j"`
+                if [ $number = 0 ] ; then
+                        echo "Start $j fail"
+                        exit 1
+                fi
+	elif [ "$j" = "vsftpd" ] ; then
+                /sbin/service vsftpd start > /dev/null
+                sleep 2
+                number=`ps -u $LOGNAME | grep -c "$j"`
+                if [ $number = 0 ] ; then
+                        echo "Start $j fail"
+                        exit 1
+                fi
+	else
+		$j start > /dev/null 2>&1
+		sleep 2
+		number=`ps -u $LOGNAME | grep -c "[ ]$j\$"`
+		if [ $number = 0 ] ; then
+			echo "Start $j fail"
+			exit 1
+		fi
+	fi
+	break
+done
+
+echo "Start $j successful"
+
+echo $?
+

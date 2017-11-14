@@ -1,0 +1,21 @@
+#!/bin/sh
+#
+#
+begintime=$(date +%Y%m%d%H%M%S)
+endtime=$(date +%Y%m%d%H%M%S)
+LOGDIR=/audit/sys/log
+
+if [ ! -d ${LOGDIR} ]
+then
+		mkdir -p ${LOGDIR}
+fi
+logfile=$LOGDIR/restart.log
+if [ ! -f $logfile ]
+then
+		touch $logfile
+fi
+echo "========begingtime ${begintime}=====">> ${logfile} 2>&1
+echo "system reboot" >> ${logfile} 2>&1
+reboot >> ${logfile} 2>&1
+echo "========endtime ${endtime}========">> ${logfile} 2>&1
+echo "######################################">> ${logfile} 2>&1

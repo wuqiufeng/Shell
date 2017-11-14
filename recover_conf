@@ -1,0 +1,335 @@
+#!/bin/sh
+#
+if [ $# != 4 ]
+then
+	echo "Useage:recover_conf dbuser dbpassword backupname srcdir"
+	exit 1
+fi
+NOWTIME=`date +%Y%m%d%H%M%S`
+[ $1 ]&&dbuser=$1
+[ $2 ]&&dbpassword=$2
+[ $3 ]&&backupname=$3
+
+MYSQL=/opt/mysql/bin/mysql
+
+function permsg()
+{
+	echo "error:mysql recover fail!!"
+}
+
+DESTDIR=$4
+if [ ! -d $DESTDIR ]
+then
+	echo permsg
+	exit 2
+fi
+
+LOGDIR=/audit/db/log
+if [ ! -d $LOGDIR ]
+then
+	mkdir -p $LOGDIR
+fi
+
+logfile=$LOGDIR/recover_conf.log
+if [ ! -f $logfile ]
+then
+	touch $logfile
+fi
+
+cd $DESTDIR
+tar zxf $3 
+if [ $? -ne 0 ]
+then
+	echo permsg
+	exit 1
+fi
+
+if [ ! -f tsysconfig.sql ]
+then
+	echo "<======="`date +%Y%m%d%H%M%S`"=======>" 		>>$logfile
+	echo "no exist tsysconfig.sql"  			>>$logfile
+	echo permsg
+	exit 1
+fi
+
+if [ ! -f ttaskpublicinfo.sql ]
+then
+	echo "<======="`date +%Y%m%d%H%M%S`"=======>" 		>>$logfile
+	echo "no exist ttaskpublicinfo.sql"			>>$logfile
+	echo permsg
+	exit 1
+fi
+
+if [ ! -f ttaskfileinfo.sql ]
+then
+	echo "<======="`date +%Y%m%d%H%M%S`"=======>" 		>>$logfile
+	echo "no exist ttaskfileinfo.sql"			>>$logfile
+	echo permsg
+	exit 1
+fi
+
+if [ ! -f tftpservconf.sql ]
+then
+	echo "<======="`date +%Y%m%d%H%M%S`"=======>" 		>>$logfile
+	echo "no exist tftpservconf.sql"			>>$logfile
+	echo permsg
+	exit 1
+fi
+
+if [ ! -f tfiletransuser.sql ]
+then
+	echo "<======="`date +%Y%m%d%H%M%S`"=======>" 		>>$logfile
+	echo "no exist tfiletransuser.sql"			>>$logfile
+	echo permsg
+	exit 1
+fi
+
+if [ ! -f tnetinfo.sql ]
+then
+	echo "<======="`date +%Y%m%d%H%M%S`"=======>" 		>>$logfile
+	echo "no exist tnetinfo.sql"			>>$logfile
+	echo permsg
+	exit 1
+fi
+
+if [ ! -f logtype.sql ]
+then
+	echo "<======="`date +%Y%m%d%H%M%S`"=======>" 		>>$logfile
+	echo "no exist logtype.sql"			>>$logfile
+	echo permsg
+	exit 1
+fi
+
+if [ ! -f loginconfig.sql ]
+then
+	echo "<======="`date +%Y%m%d%H%M%S`"=======>" 		>>$logfile
+	echo "no exist loginconfig.sql"			>>$logfile
+	echo permsg
+	exit 1
+fi
+
+if [ ! -f reguser.sql ]
+then
+	echo "<======="`date +%Y%m%d%H%M%S`"=======>" 		>>$logfile
+	echo "no exist reguser.sql"			>>$logfile
+	echo permsg
+	exit 1
+fi
+
+if [ ! -f role.sql ]
+then
+	echo "<======="`date +%Y%m%d%H%M%S`"=======>" 		>>$logfile
+	echo "no exist role.sql"			>>$logfile
+	echo permsg
+	exit 1
+fi
+
+if [ ! -f usergroup.sql ]
+then
+	echo "<======="`date +%Y%m%d%H%M%S`"=======>" 		>>$logfile
+	echo "no exist usergroup.sql"			>>$logfile
+	echo permsg
+	exit 1
+fi
+
+if [ ! -f userstate.sql ]
+then
+        echo "<======="`date +%Y%m%d%H%M%S`"=======>"           >>$logfile
+        echo "no exist userstate.sql"                   >>$logfile
+        echo permsg
+        exit 1
+fi
+
+
+if [ ! -f tdeviceconf.sql ]
+then
+        echo "<======="`date +%Y%m%d%H%M%S`"=======>"           >>$logfile
+        echo "no exist tdeviceconf.sql"                   >>$logfile
+        echo permsg
+        exit 1
+fi
+
+
+if [ ! -f tdeviceident.sql ]
+then
+        echo "<======="`date +%Y%m%d%H%M%S`"=======>"           >>$logfile
+        echo "no exist tdeviceident.sql"                   >>$logfile
+        echo permsg
+        exit 1
+fi
+
+if [ ! -f ttasktableofdbinfo.sql ]
+then
+        echo "<======="`date +%Y%m%d%H%M%S`"=======>"           >>$logfile
+        echo "no exist ttasktableofdbinfo.sql"                   >>$logfile
+        echo permsg
+        exit 1
+fi
+
+if [ ! -f ttaskdbinfo.sql ]
+then
+        echo "<======="`date +%Y%m%d%H%M%S`"=======>"           >>$logfile
+        echo "no exist ttaskdbinfo.sql"                   >>$logfile
+        echo permsg
+        exit 1
+fi
+
+if [ ! -f role_url.sql ]
+then
+        echo "<======="`date +%Y%m%d%H%M%S`"=======>"           >>$logfile
+        echo "no exist role_url.sql"                   >>$logfile
+        echo permsg
+        exit 1
+fi
+
+if [ ! -f url.sql ]
+then
+        echo "<======="`date +%Y%m%d%H%M%S`"=======>"           >>$logfile
+        echo "no exist url.sql"                   >>$logfile
+        echo permsg
+        exit 1
+fi
+
+if [ ! -f logindisip.sql ]
+then
+        echo "<======="`date +%Y%m%d%H%M%S`"=======>"           >>$logfile
+        echo "no exist logindisip.sql"                   >>$logfile
+        echo permsg
+        exit 1
+fi
+
+
+MYSQL_CHECK=`mysql -u${dbuser} -p${dbpassword} owdbweb < logindisip.sql        2>>$logfile;echo $?`
+if [ $MYSQL_CHECK -ne 0 ]
+then
+        permsg
+exit 1
+fi
+
+MYSQL_CHECK=`mysql -u${dbuser} -p${dbpassword} owdbweb < url.sql        2>>$logfile;echo $?`
+if [ $MYSQL_CHECK -ne 0 ]
+then
+        permsg
+exit 1
+fi
+
+MYSQL_CHECK=`mysql -u${dbuser} -p${dbpassword} owdbweb < role_url.sql        2>>$logfile;echo $?`
+if [ $MYSQL_CHECK -ne 0 ]
+then
+        permsg
+exit 1
+fi
+
+MYSQL_CHECK=`mysql -u${dbuser} -p${dbpassword} owdbconf < ttaskdbinfo.sql        2>>$logfile;echo $?`
+if [ $MYSQL_CHECK -ne 0 ]
+then
+        permsg
+exit 1
+fi
+
+MYSQL_CHECK=`mysql -u${dbuser} -p${dbpassword} owdbconf < tdeviceconf.sql        2>>$logfile;echo $?`
+if [ $MYSQL_CHECK -ne 0 ]
+then
+        permsg
+exit 1
+fi
+
+
+MYSQL_CHECK=`mysql -u${dbuser} -p${dbpassword} owdbconf < tdeviceident.sql        2>>$logfile;echo $?`
+if [ $MYSQL_CHECK -ne 0 ]
+then
+        permsg
+exit 1
+fi
+
+MYSQL_CHECK=`mysql -u${dbuser} -p${dbpassword} owdbconf < ttasktableofdbinfo.sql        2>>$logfile;echo $?`
+if [ $MYSQL_CHECK -ne 0 ]
+then
+        permsg
+exit 1
+fi
+
+
+
+
+#echo "$MYSQL -u${dbuser} -p${dbpassword} owdbconf < tsysconfig.sql"
+MYSQL_CHECK=`mysql -u${dbuser} -p${dbpassword} owdbconf < tsysconfig.sql	2>>$logfile;echo $?`
+if [ $MYSQL_CHECK -ne 0 ]
+then
+	permsg
+exit 1
+fi
+MYSQL_CHECK=`$MYSQL -u${dbuser} -p${dbpassword} owdbconf < ttaskpublicinfo.sql 2>>$logfile;echo $?`
+if [ $MYSQL_CHECK -ne 0 ]
+then
+	permsg
+exit 1
+fi
+MYSQL_CHECK=`$MYSQL -u${dbuser} -p${dbpassword} owdbconf < ttaskfileinfo.sql	2>>$logfile;echo $?`
+if [ $MYSQL_CHECK -ne 0 ]
+then
+	permsg
+exit 1
+fi
+MYSQL_CHECK=`$MYSQL -u${dbuser} -p${dbpassword} owdbconf < tftpservconf.sql	2>>$logfile;echo $?`
+if [ $MYSQL_CHECK -ne 0 ]
+then
+	permsg
+exit 1
+fi
+MYSQL_CHECK=`$MYSQL -u${dbuser} -p${dbpassword} owdbconf < tfiletransuser.sql	2>>$logfile;echo $?`
+if [ $MYSQL_CHECK -ne 0 ]
+then
+	permsg
+exit 1
+fi
+MYSQL_CHECK=`$MYSQL -u${dbuser} -p${dbpassword} owdbconf < tnetinfo.sql	2>>$logfile;echo $?`
+if [ $MYSQL_CHECK -ne 0 ]
+then
+	permsg
+exit 1
+fi
+MYSQL_CHECK=`$MYSQL -u${dbuser} -p${dbpassword} owdbweb < logtype.sql	2>>$logfile;echo $?`
+if [ $MYSQL_CHECK -ne 0 ]
+then
+	permsg
+exit 1
+fi
+MYSQL_CHECK=`$MYSQL -u${dbuser} -p${dbpassword} owdbweb < loginconfig.sql	2>>$logfile;echo $?`
+if [ $MYSQL_CHECK -ne 0 ]
+then
+	permsg
+exit 1
+fi
+MYSQL_CHECK=`$MYSQL -u${dbuser} -p${dbpassword} owdbweb < reguser.sql	2>>$logfile;echo $?`
+if [ $MYSQL_CHECK -ne 0 ]
+then
+	permsg
+exit 1
+fi
+MYSQL_CHECK=`$MYSQL -u${dbuser} -p${dbpassword} owdbweb < role.sql	2>>$logfile;echo $?`
+if [ $MYSQL_CHECK -ne 0 ]
+then
+	permsg
+exit 1
+fi
+MYSQL_CHECK=`$MYSQL -u${dbuser} -p${dbpassword} owdbweb < usergroup.sql	2>>$logfile;echo $?`
+if [ $MYSQL_CHECK -ne 0 ]
+then
+	permsg
+exit 1
+fi
+MYSQL_CHECK=`$MYSQL -u${dbuser} -p${dbpassword} owdbweb < userstate.sql  2>>$logfile;echo $?`
+if [ $MYSQL_CHECK -ne 0 ]
+then
+        permsg
+exit 1
+fi
+
+rm -rf *.sql
+
+cp -f /backup/system/network_back_conf/* /etc/sysconfig/network-scripts/
+sh /opt/oneway/script/gw_restart
+
+echo "mysql recover successful"
+

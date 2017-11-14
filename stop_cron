@@ -1,0 +1,13 @@
+#!/bin/sh
+
+
+owcron stop >/dev/null
+
+result=`ps -ef|grep -v grep|grep "owcron start"|awk '{print $2}'`
+
+if [ $result > 1 ]
+then
+        echo "fail"
+else
+        echo "sucessful"
+fi

@@ -1,0 +1,21 @@
+# restart_mysql
+
+
+sh /opt/mysql/scripts/stop.sh > /dev/null
+
+result=`ps -ef|grep -v grep|grep "mysqld"|wc -l`
+
+if [ $result == 2 ]
+then
+        echo "fail 111"
+else
+	sh /opt/mysql/scripts/start.sh > /dev/null
+	result=`ps -ef|grep -v grep|grep "mysqld"|wc -l`
+        if [ $result == 2 ]
+        then
+                echo "sucessful"
+        else
+                echo "fail 222"
+        fi
+
+fi

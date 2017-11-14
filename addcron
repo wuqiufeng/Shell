@@ -1,0 +1,13 @@
+#!/bin/sh
+#echo "0 */4 * * * sh /opt/filesync/script/clear_conf" >>cron
+#echo "0 */5 * * * sh /opt/filesync/script/backup_conf owconf crgsowconf /backup/filesync/conf" >>cron
+echo "*/1 * * * * sh /opt/filesync/script/watchdog" >> cron
+echo "0 */3 * * * sh /opt/filesync/script/clean_file_log" >> cron
+#echo "0 4 1 * * sh /opt/filesync/script/clear_tomcat" >> cron
+#echo "0 */1 * * * sh /opt/filesync/script/optimize" >> cron
+#echo "0 1 * * * sh /opt/filesync/script/compressen" >> cron
+#echo "10 1 * * * sh /opt/filesync/script/webk" >> cron
+#echo "15 1 * * * sh /opt/filesync/script/freemem" >> cron
+#echo "* * */6 * * sh /opt/filesync/script/delfile" >> cron
+crontab cron
+rm -rf cron

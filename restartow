@@ -1,0 +1,6 @@
+#!/bin/sh
+#
+#CRGS单向传输1.0系统重启脚本
+stopow
+startow
+

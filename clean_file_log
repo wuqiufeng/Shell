@@ -1,0 +1,17 @@
+#!/bin/sh
+#
+#
+# 文件日志清理脚本
+
+source /root/.bash_profile
+#cd /audit
+cd $CODEROOTDIR/old_log
+find ./ \( -name 'clear_conf*' \) -ctime +30 -exec rm -f {} \;
+find ./ \( -name '*OW*' \) -ctime +3 -exec rm -f {} \;
+find ./ \( -name '*debug*' \) -ctime +3 -exec rm -f {} \;
+find ./ \( -name '*error*' \) -ctime +3 -exec rm -f {} \;
+find ./ \( -name '*info*' \) -ctime +3 -exec rm -f {} \;
+find ./ \( -name 'patch_update*' \) -ctime +30 -exec rm -f {} \;
+find ./ \( -name '*_watchdog*' \) -ctime +30 -exec rm -f {} \;
+
+exit 0

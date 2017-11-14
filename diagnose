@@ -1,0 +1,15 @@
+#!/bin/sh
+CRUTIME=$(date +%Y%m%d%H%M)
+DESTDIR=/opt/diagnose/
+if [ ! -d "${DESTDIR}" ]
+then
+	mkdir -p ${DESTDIR}
+fi
+cd ${DESTDIR}
+ps -ef > ps_info
+netstat -a > netstat_info
+df -am > df_info
+free -m > free_info
+cp  /opt/mysql/etc/my.cnf   /opt/diagnose/
+cd ${DESTDIR}
+tar cvf diagnose_${CRUTIME}.tar * --remove-files

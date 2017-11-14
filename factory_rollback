@@ -1,0 +1,51 @@
+#!/bin/sh
+#
+if [ $# != 2 ]
+then
+	echo "Useage:factory_rollback dbuser dbpassword"
+	exit 1
+fi
+[ $1 ] && dbuser=$1
+[ $2 ] && dbpassword=$2
+
+MYSQL=/usr/bin/mysql
+
+FACTORYDIR=/backup/oneway/factory/db
+if [ ! -d $FACTORYDIR ]
+then
+	echo "fail"
+	exit 2
+fi
+
+if [ ! -f ${FACTORYDIR}/owdbaudit.sql ]
+then
+	 echo "fail"
+	 exit 3
+fi
+
+if [ ! -f ${FACTORYDIR}/owdbconf.sql ]
+then
+	 echo "fail"
+	 exit 3
+fi
+
+if [ ! -f ${FACTORYDIR}/owdbweb.sql ]
+then
+	 echo "fail"
+	 exit 3
+fi
+
+$MYSQL -u${dbuser} -p${dbpassword} owdbconf < ${FACTORYDIR}/owdbconf.sql
+
+$MYSQL -u${dbuser} -p${dbpassword} owdbaudit < ${FACTORYDIR}/owdbaudit.sql
+
+$MYSQL -u${dbuser} -p${dbpassword} owdbweb < ${FACTORYDIR}/owdbweb.sql
+
+/opt/oneway/script/sshd_stop
+
+DNS=''
+FILE_PATH=/etc/resolv.conf
+echo "nameserver $DNS" > $FILE_PATH
+
+echo "successful"
+

@@ -1,0 +1,46 @@
+#!/bin/sh
+#
+#CRGS单向传输系统1.0关闭脚本
+
+#info="短信通知(owsmsalert) 监管系统(owsysmonitor) 定时服务执行程序(owcron) 证书服务(owlicense) DB管理程序(owdbmanager) Ftp管理程序(owftpmanager) 文件同步程序(owfilesync) ftp服务程序(owftpserver) 流量控制管理程序(owmsgforward) 任务管理处理程序(owtskmanager) 任务分发处理程序(owtskdispatch)"
+#prog="owsmsalert owsysmonitor owcron owlicense owdbmanager owftpmanager owfilesync owftpserver owmsgforward  owtskmanager owtskdispatch"
+
+
+info="短信通知(owsmsalert) 监管系统(owsysmonitor) 定时服务执行程序(owcron) 证书服务(owlicense)  Ftp管理程序(owftpmanager) 文件同步程序(owfilesync) ftp服务程序(owftpserver) 流量控制管理程序(owmsgforward) 任务管理处理程序(owtskmanager) 任务分发处理程序(owtskdispatch)"
+
+prog="owsmsalert owsysmonitor owcron owlicense  owftpmanager owfilesync owftpserver owmsgforward  owtskmanager owtskdispatch"
+
+
+ipos=0
+for i in $info
+do
+	echo  "关闭 $i ..."
+	jpos=0
+	for j in $prog
+	do
+		if [ $ipos != $jpos ] ; then
+			jpos=`expr $jpos + 1`
+			continue
+		else
+			$j stop > /dev/null 2>&1
+			sleep 2
+#			clearprg $j
+#			sleep 1
+#			echo -n "..."
+			number=`ps -u $LOGNAME | grep -c "[ ]$j\$"`
+			if [ $number != 0 ] ; then
+				echo "[1;31m关闭程序$j失败[0;37m"
+				exit 1
+			fi
+			break
+		fi
+	done
+	echo "[1;32m成功![0;37m"
+	ipos=`expr $ipos + 1`
+done
+
+echo "..."
+
+echo "进程检查"
+ps -ef|grep $LOGNAME|grep ow
+

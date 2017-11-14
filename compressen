@@ -1,0 +1,75 @@
+#!/bin/sh
+
+AUDITDIR=/audit
+MONITOR=/audit/monitor
+OLDLOGDIR=/audit/oneway/old_log
+PROCESSLOGDIR=/audit/processlog
+WATCHLOGDIR=/audit/watchdog
+DOWNLOAD=/audit/download
+
+DATETIME=$(date -d "-1 day" +%Y%m%d)
+
+cd ${AUDITDIR}
+result=`find /audit/db/log/ -name "*.log" |wc -l`
+if [ ${result} -gt 0 ] ; then
+        zip -rP owst${DATETIME} ${DATETIME}_db.zip /audit/db/ > /dev/null
+        mv ${DATETIME}_db.zip ${DOWNLOAD}
+        rm -f /audit/db/log/*
+fi
+
+result=`find /audit/dxcs/ -name "*.log" |wc -l`
+if [ ${result} -gt 0 ] ; then
+        zip -rP owst${DATETIME} ${DATETIME}_dxcs.zip /audit/dxcs/ > /dev/null
+        mv ${DATETIME}_dxcs.zip ${DOWNLOAD}
+        rm -f /audit/dxcs/*.log
+        rm -f /audit/dxcs/WEB-INF/*
+fi
+
+result=`find /audit/sys/log/ -name "*.log" |wc -l`
+if [ ${result} -gt 0 ] ; then
+        zip -rP owst${DATETIME} ${DATETIME}_sys.zip /audit/sys/ > /dev/null
+        mv ${DATETIME}_sys.zip ${DOWNLOAD}
+        rm -f /audit/sys/log/*
+fi
+
+result=`find /audit/update/patch/ -name "*.log" |wc -l`
+if [ ${result} -gt 0 ] ; then
+        zip -rP owst${DATETIME} ${DATETIME}_update.zip /audit/update/ > /dev/null
+        mv ${DATETIME}_update.zip ${DOWNLOAD}
+        rm -f /audit/update/patch/*
+fi
+
+cd ${MONITOR}
+result=`find . -name "${DATETIME}*" |wc -l`
+if [ ${result} -gt 0 ] ; then
+        zip -rP owst${DATETIME} ${DATETIME}_monitor.zip ${DATETIME}* > /dev/null
+        mv ${DATETIME}_monitor.zip ${DOWNLOAD}
+        rm -f ${DATETIME}*
+fi
+
+cd ${OLDLOGDIR}
+result=`find . -name "*${DATETIME}*" |wc -l`
+if [ ${result} -gt 0 ] ; then
+        zip -rP owst${DATETIME} ${DATETIME}_oneway.zip *${DATETIME}* > /dev/null
+        mv ${DATETIME}_oneway.zip ${DOWNLOAD}
+        rm -f *${DATETIME}*
+fi
+
+cd ${PROCESSLOGDIR}
+result=`find . -name "*${DATETIME}*" |wc -l`
+if [ ${result} -gt 0 ] ; then
+        zip -rP owst${DATETIME} ${DATETIME}_processlog.zip *${DATETIME}* > /dev/null
+        mv ${DATETIME}_processlog.zip ${DOWNLOAD}
+        rm -f *${DATETIME}*
+fi
+
+cd ${WATCHLOGDIR}
+result=`find . -name ${DATETIME}* |wc -l`
+if [ ${result} -gt 0 ] ; then
+        zip -rP owst${DATETIME} ${DATETIME}_watchdog.zip ${DATETIME}* > /dev/null
+        mv ${DATETIME}_watchdog.zip ${DOWNLOAD}
+        rm -f ${DATETIME}*
+fi
+
+echo "successful"
+

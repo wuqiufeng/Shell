@@ -1,0 +1,4 @@
+#!/bin/sh
+MYSQL=/usr/bin/mysql
+$MYSQL -uowconf -pcrgsowconf owdbconf -e "optimize table tfiletransinfo" >> /dev/null
+$MYSQL -uowconf -pcrgsowconf owdbaudit -e "optimize table tfiletranslog" >> /dev/null

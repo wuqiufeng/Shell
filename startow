@@ -1,0 +1,43 @@
+#!/bin/sh
+#
+#
+# CRGS单向传输1.0系统启动脚本
+
+#info="任务分发处理程序(owtskdispatch) 任务管理处理程序(owtskmanager) 流量控制管理程序(owmsgforward) ftp服务程序(owftpserver) 文件同步程序(owfilesync) Ftp管理程序(owftpmanager) DB管理程序(owdbmanager) 证书服务(owlicense) 定时服务执行程序(owcron) 监管系统(owsysmonitor) 短信通知(owsmsalert)"
+#prog="owtskdispatch owtskmanager owmsgforward owftpserver owfilesync owftpmanager owdbmanager owlicense owcron owsysmonitor owsmsalert"
+
+
+info="任务分发处理程序(owtskdispatch) 任务管理处理程序(owtskmanager) 流量控制管理程序(owmsgforward) ftp服务程序(owftpserver) 文件同步程序(owfilesync) Ftp管理程序(owftpmanager)  证书服务(owlicense) 定时服务执行程序(owcron) 监管系统(owsysmonitor) 短信通知(owsmsalert)"
+
+prog="owtskdispatch owtskmanager owmsgforward owftpserver owfilesync owftpmanager  owlicense owcron owsysmonitor owsmsalert"
+
+ipos=0
+for i in $info
+do
+	echo  "启动" "$i" "..."
+	jpos=0
+	for j in $prog
+	do
+		if [ $ipos != $jpos ] ; then
+			jpos=`expr $jpos + 1`
+			continue
+		else
+			$j start > /dev/null 2>&1
+			sleep 2
+			echo "..."
+			number=`ps -u $LOGNAME | grep -c "[ ]$j\$"`
+			if [ $number = 0 ] ; then
+				echo "[1;31m启动程序$j失败[0;37m"
+				exit 1
+			fi
+			break
+		fi
+	done
+	echo "[1;32m成功![0;37m"
+	ipos=`expr $ipos + 1`
+done
+
+echo "..."
+
+echo "进程检查"
+ps -ef|grep $LOGNAME|grep ow

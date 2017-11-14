@@ -1,0 +1,28 @@
+#!/bin/sh
+dir=/cache/restoredata/ftp
+count=`ps -aux|grep " sh /opt/oneway/script/delfile"|wc -l`
+if [ count > 1 ]
+then
+	echo "the proc already running"
+	exit
+fi
+num=`ls -ls $dir | awk "NR>1" | awk '{print $NF}'`
+for file in $num
+do
+        size=`du -b ${dir}/${file}|awk 'END{print $1}'`
+        echo "${file}:$size"
+        while (((${size}-4096) > 1073741824))
+        do
+                file_list=`ls -rt $(find ${dir}/${file} -type f|sed -n 1,1000p)`
+                for p in ${file_list}
+		do
+                	echo "remove file ${file}:$p"
+                	rm -f $p;
+                	size=`du -b ${dir}/${file}|awk 'END{print $1}'`
+                	if (((${size}-4096) < 1073741824));then
+                        	break;
+			fi
+                done
+		size=`du -b ${dir}/${file}|awk 'END{print $1}'`
+        done
+done

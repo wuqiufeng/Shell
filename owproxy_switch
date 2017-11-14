@@ -1,0 +1,43 @@
+#!/bin/sh
+
+if [ $# != 3 ]
+then
+        echo "Useage:owproxy_switch 1"
+        exit 1
+fi
+
+j=owproxyin
+m=owproxyin_luodi
+n=owproxyin_liu
+i=0
+k=1
+
+DIR=/opt/oneway/bin
+cd $DIR
+
+$j stop > /dev/null 2>&1
+number=`ps -u $LOGNAME | grep -c "[ ]$j\$"`
+if [ $number != 0 ] ; then
+	echo "关闭程序$j失败"
+       	exit 1
+fi
+
+if [ $1 = $i ]; then
+	\cp $m $j
+	echo 111
+else if [ $1 = $k ];then
+	\cp $n $j
+	echo 222
+fi
+fi
+
+$j start > /dev/null 2>&1
+number=`ps -u $LOGNAME | grep -c "[ ]$j\$"` 
+if [ $number = 0 ] ; then
+        echo "启动u程序$j失败" 
+        exit 1  
+fi      
+
+echo $?
+
+

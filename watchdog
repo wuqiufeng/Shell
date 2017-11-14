@@ -1,0 +1,79 @@
+#!/bin/sh
+#
+#
+NOWTIME=$(date +%Y%m%d%H%M%S)
+filename=`date +%Y%m%d`_watchdog.log
+if [ ! -d /audit/watchdog ]
+then
+		mkdir -p /audit/watchdog
+fi
+echo "<==========${NOWTIME}==========>"	>>/audit/watchdog/$filename
+cd /root/
+source /root/.bash_profile
+#p_list="owtskdispatch owtskmanager owmsgforward owftpserver owfilesync owftpmanager owdbmanager owlicense owcron owsysmonitor owsmsalert"
+p_list="owtskdispatch owtskmanager owproxyout owproxyin owforward owftpmanager"
+for p in ${p_list}; do
+if [ -f .${p}id ]
+then
+        pid=`cat .${p}id`
+else
+        echo "$p is not run!Now begin to run ..." >>/audit/watchdog/$filename
+
+	#cp /audit/oneway/log/${p}_debug_current.log /audit/processlog/${p}_debug_$NOWTIME.log 
+     #   cp /audit/oneway/log/${p}_info_current.log /audit/processlog/${p}_info_$NOWTIME.log
+     #   cp /audit/oneway/log/${p}_error_current.log /audit/processlog/${p}_error_$NOWTIME.log 
+
+        $p start >/dev/null
+	continue
+fi
+i=`ps -ef|grep ${pid}|grep -v grep|awk '{ print $2 }'|grep $pid`
+echo $i
+if [ "${pid}" =  "${i}" ]
+then
+        echo "$p is running..." >>/audit/watchdog/$filename
+else
+        echo "$p is not run!Now begin to run ..." >>/audit/watchdog/$filename
+
+#	cp /audit/oneway/log/${p}_debug_current.log /audit/processlog/${p}_debug_$NOWTIME.log 
+ #       cp /audit/oneway/log/${p}_info_current.log /audit/processlog/${p}_info_$NOWTIME.log
+  #      cp /audit/oneway/log/${p}_error_current.log /audit/processlog/${p}_error_$NOWTIME.log 
+
+        k_list=`ps -ef|grep $p|grep " 1 "|grep -v grep|awk '{print $2}'`
+	if [ "${k_list}" != "" ]
+	then
+        	for j in $k_list; do
+#			echo "++++++++++ kill -9 $j  ++++++++++" >>/audit/watchdog/$filename
+        		echo ${j} > /root/.${p}id
+        	done
+	else
+        	$p start  >/dev/null
+	fi
+        sleep 2
+fi
+
+done
+
+#result=`ps -ef|grep -v grep|grep "mysqld" |wc -l`
+#if [ $result == 2 ] ; then
+#        echo "mysql is running..." >>/audit/watchdog/$filename
+#else
+#	echo "mysql is not running!Now begin to run ...">>/audit/watchdog/$filename
+#        /opt/mysql/scripts/start.sh >/dev/null
+#	n=`ps -ef|grep mysql |grep " 1 "|awk '{printf $2}'`
+#        taskset -pc 10 $n > /dev/null
+#fi
+
+#result=`ps -ef|grep -v grep|grep "org.apache.catalina.startup.Bootstrap start" |wc -l`
+#if [ $result != 1 ] ; then
+#	/opt/tomcat5/bin/startup.sh >/dev/null
+#else
+#        echo "tomcat is running..." >>/audit/watchdog/$filename
+#fi
+
+
+#result=`ps -ef|grep -v grep|grep "/usr/bin/java -jar DBManager.jar" |wc -l`
+#if [ $result != 1 ] ; then
+#        /opt/oneway/script/java_proc_out_start >/dev/null
+#else
+#        echo "java_proc_out_start is running..." >>/audit/watchdog/$filename
+#fi

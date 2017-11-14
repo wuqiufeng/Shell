@@ -1,0 +1,10 @@
+#!/bin/sh
+
+#ps -C owtskdispatch,owtskmanager,owmsgforward,owftpserver,owfilesync,owftpmanager,owdbmanager,owcron,owsysmonitor,owsmsalert -o ppid=,pid=,cmd= |grep " 1 "|awk '{print $1,"|",$2,"|",$3}'
+ps -C owtskdispatch,owtskmanager,owmsgforward,owftpserver,owfilesync,owftpmanager,owcron,owsysmonitor,owsmsalert -o ppid=,pid=,cmd= |grep " 1 "|awk '{print $1,"|",$2,"|",$3}'
+
+#ps -C owsysmonitor -o pid=,cmd=|awk '{print $1,"|",$2}'
+
+ps -C mysqld -o ppid=,pid=,cmd=|awk '{print $1,"|",$2,"|",$3}'|awk -F/ '{print $1,$5}'
+
+ps -C vsftpd -o ppid=,pid=,cmd=|awk '{print $1,"|",$2,"|",$3}'|awk -F/ '{print $1,$4}'

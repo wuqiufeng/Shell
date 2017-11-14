@@ -1,0 +1,24 @@
+#!/bin/sh
+#
+#
+# 任务配置清理脚本
+
+NowDay=`date +%Y%m%d`
+LOGDIR=/audit/db
+
+if [ ! -d $LOGDIR ]
+then
+	mkdir -p $LOGDIR
+fi
+echo "<===================== begin =====================>" >> $LOGDIR/clear_conf.log
+echo "开始清理配置["`date +%Y%m%d%H%M%S`"]" >> $LOGDIR/clear_conf.log
+
+cd /backup/oneway/conf
+
+find ./ \( -name 'backup_conf*' \) -ctime +30 -exec rm -f {} \;
+
+echo "结束清理["`date +%Y%m%d%H%M%S`"]" >> $LOGDIR/clear_conf.log
+echo "<===================== end =====================>" >> $LOGDIR/clear_conf.log
+echo "" >> $LOGDIR/clear_conf.log
+
+exit 0

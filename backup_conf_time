@@ -1,0 +1,10 @@
+#!/bin/sh
+
+if [ $# != 4 ];then
+	echo "sh backup_conf_time dbuser dbpasswd directory time"
+	exit 1;
+fi
+while true;do
+sleep $4d
+	sh /opt/oneway/script/backup_conf $1 $2 $3 >/dev/nul 2>1&
+done
